@@ -52,12 +52,12 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "^20.17.10",
-    "@vitest/coverage-v8": "^2.1.8",
+    "@vitest/coverage-v8": "^4.1.0",
     "pino": "^9.6.0",
     "pino-pretty": "^13.0.0",
     "typescript": "^5.7.2",
-    "vite": "^7.3.2",
+    "vite": "^6.4.3",
     "vite-plugin-dts": "^4.3.0",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.8"
   }
 }
