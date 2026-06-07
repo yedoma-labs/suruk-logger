@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-07
+
 ### Added
 - Enhanced `error()` and `fatal()` methods now accept additional context fields as third parameter
   - New signature: `logger.error(err: Error, msg: string, fields: LogContext)`
