@@ -70,18 +70,18 @@ class SurukLogger implements Logger {
 
   /**
    * Log an error message
-   * 
+   *
    * @param msgOrFieldsOrErr - Error object, message string, or fields object
    * @param fieldsOrMsg - Additional fields or message
    * @param additionalFields - Additional context fields (avoid logging sensitive data here)
-   * 
+   *
    * @example
    * // Error with message
    * logger.error(new Error('Failed'), 'Database error')
-   * 
+   *
    * // Error with message and context
    * logger.error(new Error('Failed'), 'Database error', { query, duration })
-   * 
+   *
    * @security Do not log sensitive data (passwords, tokens, etc.) in additionalFields
    *           Configure redaction patterns instead
    */
@@ -102,18 +102,18 @@ class SurukLogger implements Logger {
 
   /**
    * Log a fatal error message
-   * 
+   *
    * @param msgOrFieldsOrErr - Error object, message string, or fields object
    * @param fieldsOrMsg - Additional fields or message
    * @param additionalFields - Additional context fields (avoid logging sensitive data here)
-   * 
+   *
    * @example
    * // Fatal error with message
    * logger.fatal(new Error('Out of memory'), 'System failure')
-   * 
+   *
    * // Fatal error with message and context
    * logger.fatal(new Error('Out of memory'), 'System failure', { heapUsed, uptime })
-   * 
+   *
    * @security Do not log sensitive data (passwords, tokens, etc.) in additionalFields
    *           Configure redaction patterns instead
    */
