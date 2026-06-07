@@ -167,6 +167,63 @@ describe('SurukLogger', () => {
         'Error message'
       )
     })
+
+    it('should sanitize __proto__ from additional fields', () => {
+      vi.spyOn(logger.pino, 'error')
+      const error = new Error('Test error')
+      
+      logger.error(error, 'Error message', {
+        __proto__: { polluted: true },
+        validField: 'value'
+      } as never)
+
+      expect(logger.pino.error).toHaveBeenCalledWith(
+        {
+          err: error,
+          validField: 'value'
+          // __proto__ should be filtered out
+        },
+        'Error message'
+      )
+    })
+
+    it('should sanitize constructor from additional fields', () => {
+      vi.spyOn(logger.pino, 'error')
+      const error = new Error('Test error')
+      
+      logger.error(error, 'Error message', {
+        constructor: { prototype: { polluted: true } },
+        validField: 'value'
+      } as never)
+
+      expect(logger.pino.error).toHaveBeenCalledWith(
+        {
+          err: error,
+          validField: 'value'
+          // constructor should be filtered out
+        },
+        'Error message'
+      )
+    })
+
+    it('should sanitize prototype from additional fields', () => {
+      vi.spyOn(logger.pino, 'fatal')
+      const error = new Error('Fatal error')
+      
+      logger.fatal(error, 'Fatal message', {
+        prototype: { polluted: true },
+        validField: 'value'
+      } as never)
+
+      expect(logger.pino.fatal).toHaveBeenCalledWith(
+        {
+          err: error,
+          validField: 'value'
+          // prototype should be filtered out
+        },
+        'Fatal message'
+      )
+    })
   })
 
   describe('Child logger', () => {
