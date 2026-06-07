@@ -113,6 +113,117 @@ describe('SurukLogger', () => {
 
       expect(logger.pino.fatal).toHaveBeenCalledWith({ err: error }, 'fatal')
     })
+
+    it('should log error with custom message and additional fields', () => {
+      vi.spyOn(logger.pino, 'error')
+      const error = new Error('Query failed')
+      
+      logger.error(error, 'Database error', {
+        query: 'SELECT * FROM users',
+        duration: 1234,
+        retries: 3
+      })
+
+      expect(logger.pino.error).toHaveBeenCalledWith(
+        {
+          err: error,
+          query: 'SELECT * FROM users',
+          duration: 1234,
+          retries: 3
+        },
+        'Database error'
+      )
+    })
+
+    it('should log fatal error with custom message and additional fields', () => {
+      vi.spyOn(logger.pino, 'fatal')
+      const error = new Error('Critical failure')
+      
+      logger.fatal(error, 'System shutdown', {
+        reason: 'out_of_memory',
+        uptime: 3600,
+        lastCheckpoint: '2024-01-01T00:00:00Z'
+      })
+
+      expect(logger.pino.fatal).toHaveBeenCalledWith(
+        {
+          err: error,
+          reason: 'out_of_memory',
+          uptime: 3600,
+          lastCheckpoint: '2024-01-01T00:00:00Z'
+        },
+        'System shutdown'
+      )
+    })
+
+    it('should handle error with empty additional fields', () => {
+      vi.spyOn(logger.pino, 'error')
+      const error = new Error('Test error')
+      
+      logger.error(error, 'Error message', {})
+
+      expect(logger.pino.error).toHaveBeenCalledWith(
+        { err: error },
+        'Error message'
+      )
+    })
+
+    it('should sanitize __proto__ from additional fields', () => {
+      vi.spyOn(logger.pino, 'error')
+      const error = new Error('Test error')
+      
+      logger.error(error, 'Error message', {
+        __proto__: { polluted: true },
+        validField: 'value'
+      } as never)
+
+      expect(logger.pino.error).toHaveBeenCalledWith(
+        {
+          err: error,
+          validField: 'value'
+          // __proto__ should be filtered out
+        },
+        'Error message'
+      )
+    })
+
+    it('should sanitize constructor from additional fields', () => {
+      vi.spyOn(logger.pino, 'error')
+      const error = new Error('Test error')
+      
+      logger.error(error, 'Error message', {
+        constructor: { prototype: { polluted: true } },
+        validField: 'value'
+      } as never)
+
+      expect(logger.pino.error).toHaveBeenCalledWith(
+        {
+          err: error,
+          validField: 'value'
+          // constructor should be filtered out
+        },
+        'Error message'
+      )
+    })
+
+    it('should sanitize prototype from additional fields', () => {
+      vi.spyOn(logger.pino, 'fatal')
+      const error = new Error('Fatal error')
+      
+      logger.fatal(error, 'Fatal message', {
+        prototype: { polluted: true },
+        validField: 'value'
+      } as never)
+
+      expect(logger.pino.fatal).toHaveBeenCalledWith(
+        {
+          err: error,
+          validField: 'value'
+          // prototype should be filtered out
+        },
+        'Fatal message'
+      )
+    })
   })
 
   describe('Child logger', () => {

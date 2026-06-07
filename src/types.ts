@@ -29,9 +29,11 @@ export interface Logger {
   error(msg: string, fields?: LogContext): void
   error(fields: LogContext, msg: string): void
   error(err: Error, msg?: string): void
+  error(err: Error, msg: string, fields: LogContext): void
   fatal(msg: string, fields?: LogContext): void
   fatal(fields: LogContext, msg: string): void
   fatal(err: Error, msg?: string): void
+  fatal(err: Error, msg: string, fields: LogContext): void
   child(fields: LogContext): Logger
   readonly level: LogLevel
   readonly pino: PinoLogger

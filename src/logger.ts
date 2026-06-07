@@ -11,6 +11,26 @@ function isError(value: unknown): value is Error {
   return value instanceof Error
 }
 
+/**
+ * Sanitize fields to prevent prototype pollution
+ * Removes dangerous keys: __proto__, constructor, prototype
+ */
+function sanitizeFields(fields: LogContext): LogContext {
+  if (!fields || typeof fields !== 'object') {
+    return {}
+  }
+
+  const sanitized: LogContext = {}
+  for (const [key, value] of Object.entries(fields)) {
+    // Skip dangerous prototype pollution keys
+    if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+      continue
+    }
+    sanitized[key] = value
+  }
+  return sanitized
+}
+
 class SurukLogger implements Logger {
   private _pino: PinoLogger
 
@@ -48,20 +68,64 @@ class SurukLogger implements Logger {
     this._log('warn', msgOrFields, fieldsOrMsg)
   }
 
-  error(msgOrFieldsOrErr: string | LogContext | Error, fieldsOrMsg?: LogContext | string): void {
+  /**
+   * Log an error message
+   * 
+   * @param msgOrFieldsOrErr - Error object, message string, or fields object
+   * @param fieldsOrMsg - Additional fields or message
+   * @param additionalFields - Additional context fields (avoid logging sensitive data here)
+   * 
+   * @example
+   * // Error with message
+   * logger.error(new Error('Failed'), 'Database error')
+   * 
+   * // Error with message and context
+   * logger.error(new Error('Failed'), 'Database error', { query, duration })
+   * 
+   * @security Do not log sensitive data (passwords, tokens, etc.) in additionalFields
+   *           Configure redaction patterns instead
+   */
+  error(
+    msgOrFieldsOrErr: string | LogContext | Error,
+    fieldsOrMsg?: LogContext | string,
+    additionalFields?: LogContext
+  ): void {
     if (isError(msgOrFieldsOrErr)) {
       const msg = typeof fieldsOrMsg === 'string' ? fieldsOrMsg : msgOrFieldsOrErr.message
-      this._pino.error({ err: msgOrFieldsOrErr }, msg)
+      const fields = additionalFields ? sanitizeFields(additionalFields) : {}
+      this._pino.error({ err: msgOrFieldsOrErr, ...fields }, msg)
       return
     }
 
     this._log('error', msgOrFieldsOrErr, fieldsOrMsg)
   }
 
-  fatal(msgOrFieldsOrErr: string | LogContext | Error, fieldsOrMsg?: LogContext | string): void {
+  /**
+   * Log a fatal error message
+   * 
+   * @param msgOrFieldsOrErr - Error object, message string, or fields object
+   * @param fieldsOrMsg - Additional fields or message
+   * @param additionalFields - Additional context fields (avoid logging sensitive data here)
+   * 
+   * @example
+   * // Fatal error with message
+   * logger.fatal(new Error('Out of memory'), 'System failure')
+   * 
+   * // Fatal error with message and context
+   * logger.fatal(new Error('Out of memory'), 'System failure', { heapUsed, uptime })
+   * 
+   * @security Do not log sensitive data (passwords, tokens, etc.) in additionalFields
+   *           Configure redaction patterns instead
+   */
+  fatal(
+    msgOrFieldsOrErr: string | LogContext | Error,
+    fieldsOrMsg?: LogContext | string,
+    additionalFields?: LogContext
+  ): void {
     if (isError(msgOrFieldsOrErr)) {
       const msg = typeof fieldsOrMsg === 'string' ? fieldsOrMsg : msgOrFieldsOrErr.message
-      this._pino.fatal({ err: msgOrFieldsOrErr }, msg)
+      const fields = additionalFields ? sanitizeFields(additionalFields) : {}
+      this._pino.fatal({ err: msgOrFieldsOrErr, ...fields }, msg)
       return
     }
 
