@@ -7,14 +7,14 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['password'],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('User login', {
         username: 'john',
-        password: 'secret123'
+        password: 'secret123',
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -24,16 +24,16 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['password', 'token', 'apiKey'],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('Authentication', {
         username: 'john',
         password: 'secret123',
         token: 'abc-xyz',
-        apiKey: 'key-123'
+        apiKey: 'key-123',
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -45,16 +45,16 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['user.password'],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('User data', {
         user: {
           name: 'John',
-          password: 'secret123'
-        }
+          password: 'secret123',
+        },
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -64,17 +64,17 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['headers.authorization', 'headers.cookie'],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('HTTP request', {
         headers: {
           'content-type': 'application/json',
           authorization: 'Bearer token',
-          cookie: 'session=abc123'
-        }
+          cookie: 'session=abc123',
+        },
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -86,20 +86,20 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['*.password'],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('User data', {
         user: {
           name: 'John',
-          password: 'secret123'
+          password: 'secret123',
         },
         admin: {
           name: 'Admin',
-          password: 'admin-secret'
-        }
+          password: 'admin-secret',
+        },
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -109,18 +109,18 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['*.*.password'],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('Deep nested data', {
         data: {
           user: {
             name: 'John',
-            password: 'deep-secret'
-          }
-        }
+            password: 'deep-secret',
+          },
+        },
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -130,19 +130,19 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['*.password', '*.token', '*.apiKey'],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('Sensitive data', {
         auth: {
           password: 'secret',
-          token: 'abc123'
+          token: 'abc123',
         },
         config: {
-          apiKey: 'key-xyz'
-        }
+          apiKey: 'key-xyz',
+        },
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -153,26 +153,22 @@ describe('Redaction', () => {
     it('should combine top-level and wildcard redaction', () => {
       const logger = createLogger({
         name: 'test',
-        redact: [
-          'password',
-          '*.password',
-          '*.*.password'
-        ],
-        pretty: false
+        redact: ['password', '*.password', '*.*.password'],
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('Multi-level passwords', {
         password: 'top-level',
         user: {
-          password: 'nested-1'
+          password: 'nested-1',
         },
         data: {
           account: {
-            password: 'nested-2'
-          }
-        }
+            password: 'nested-2',
+          },
+        },
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -181,25 +177,21 @@ describe('Redaction', () => {
     it('should combine exact paths and wildcards', () => {
       const logger = createLogger({
         name: 'test',
-        redact: [
-          'headers.authorization',
-          '*.token',
-          'apiKey'
-        ],
-        pretty: false
+        redact: ['headers.authorization', '*.token', 'apiKey'],
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('API request', {
         headers: {
           authorization: 'Bearer abc',
-          'content-type': 'application/json'
+          'content-type': 'application/json',
         },
         auth: {
-          token: 'xyz123'
+          token: 'xyz123',
         },
-        apiKey: 'key-789'
+        apiKey: 'key-789',
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -211,16 +203,16 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['password', 'token'],
-        pretty: false
+        pretty: false,
       })
 
       const child = logger.child({ service: 'auth' })
       vi.spyOn(child.pino, 'info')
-      
+
       child.info('User login', {
         username: 'john',
         password: 'secret123',
-        token: 'abc-xyz'
+        token: 'abc-xyz',
       })
 
       expect(child.pino.info).toHaveBeenCalled()
@@ -230,19 +222,19 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['apiKey', '*.secret'],
-        pretty: false
+        pretty: false,
       })
 
       const child1 = logger.child({ service: 'api' })
       const child2 = child1.child({ requestId: 'req-123' })
-      
+
       vi.spyOn(child2.pino, 'warn')
-      
+
       child2.warn('External call', {
         apiKey: 'secret-key',
         config: {
-          secret: 'hidden-value'
-        }
+          secret: 'hidden-value',
+        },
       })
 
       expect(child2.pino.warn).toHaveBeenCalled()
@@ -254,16 +246,16 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['password', 'token'],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'error')
       const error = new Error('Auth failed')
-      
+
       logger.error(error, 'Authentication error', {
         username: 'john',
         password: 'secret123',
-        token: 'abc-xyz'
+        token: 'abc-xyz',
       })
 
       expect(logger.pino.error).toHaveBeenCalled()
@@ -273,20 +265,20 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['*.password', 'credentials.token'],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'error')
       const error = new Error('DB error')
-      
+
       logger.error(error, 'Database authentication failed', {
         user: {
           username: 'dbuser',
-          password: 'db-secret'
+          password: 'db-secret',
         },
         credentials: {
-          token: 'db-token-123'
-        }
+          token: 'db-token-123',
+        },
       })
 
       expect(logger.pino.error).toHaveBeenCalled()
@@ -306,46 +298,46 @@ describe('Redaction', () => {
           '*.token',
           'apiKey',
           '*.apiKey',
-          
+
           // Payment
           'cardNumber',
           '*.cardNumber',
           'cvv',
           '*.cvv',
-          
+
           // PII
           'ssn',
           '*.ssn',
-          
+
           // HTTP
           'headers.authorization',
-          'headers.cookie'
+          'headers.cookie',
         ],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('Payment processing', {
         user: {
           name: 'John Doe',
           ssn: '123-45-6789',
-          password: 'user-secret'
+          password: 'user-secret',
         },
         payment: {
           cardNumber: '4111111111111111',
           cvv: '123',
-          amount: 100.00
+          amount: 100.0,
         },
         auth: {
           token: 'bearer-abc-xyz',
-          apiKey: 'pk_live_123456'
+          apiKey: 'pk_live_123456',
         },
         headers: {
           'content-type': 'application/json',
           authorization: 'Bearer token',
-          cookie: 'session=xyz'
-        }
+          cookie: 'session=xyz',
+        },
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -357,14 +349,14 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: [],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('No redaction', {
         password: 'visible',
-        token: 'visible'
+        token: 'visible',
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -373,14 +365,14 @@ describe('Redaction', () => {
     it('should handle undefined redact config', () => {
       const logger = createLogger({
         name: 'test',
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('Default behavior', {
         password: 'visible',
-        token: 'visible'
+        token: 'visible',
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -390,14 +382,14 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['password'],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('Null password', {
         username: 'john',
-        password: null
+        password: null,
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
@@ -407,14 +399,14 @@ describe('Redaction', () => {
       const logger = createLogger({
         name: 'test',
         redact: ['token'],
-        pretty: false
+        pretty: false,
       })
 
       vi.spyOn(logger.pino, 'info')
-      
+
       logger.info('Undefined token', {
         username: 'john',
-        token: undefined
+        token: undefined,
       })
 
       expect(logger.pino.info).toHaveBeenCalled()
