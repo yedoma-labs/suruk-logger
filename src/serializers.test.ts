@@ -117,6 +117,36 @@ describe('Serializers', () => {
       // Should have truncated before max depth
       expect(depth).toBeLessThanOrEqual(10)
     })
+
+    it('should handle non-Error cause values', () => {
+      const error = Object.assign(new Error('Main error'), {
+        cause: 'string cause',
+      })
+
+      const result = defaultSerializers.error?.(error)
+
+      expect(result?.cause).toBe('string cause')
+    })
+
+    it('should handle numeric cause values', () => {
+      const error = Object.assign(new Error('Error with number'), {
+        cause: 404,
+      })
+
+      const result = defaultSerializers.error?.(error)
+
+      expect(result?.cause).toBe('404')
+    })
+
+    it('should handle object cause values', () => {
+      const error = Object.assign(new Error('Error with object'), {
+        cause: { code: 'ERR_CUSTOM', details: 'some info' },
+      })
+
+      const result = defaultSerializers.error?.(error)
+
+      expect(result?.cause).toBe('[object Object]')
+    })
   })
 
   describe('request serializer', () => {
@@ -152,6 +182,40 @@ describe('Serializers', () => {
         'content-type': 'application/json',
       })
       expect((result?.headers as Record<string, unknown>)?.authorization).toBeUndefined()
+    })
+
+    it('should handle case-insensitive headers', () => {
+      const req = {
+        method: 'POST',
+        headers: {
+          Host: 'example.com',
+          'Content-Type': 'application/json',
+          'User-Agent': 'Mozilla/5.0',
+          Authorization: 'Bearer secret',
+        },
+      }
+
+      const result = defaultSerializers.request?.(req)
+
+      // Headers should be normalized and safe ones included
+      expect(result?.headers).toMatchObject({
+        host: 'example.com',
+        'content-type': 'application/json',
+        'user-agent': 'Mozilla/5.0',
+      })
+      expect((result?.headers as Record<string, unknown>)?.authorization).toBeUndefined()
+    })
+
+    it('should handle headers as array (edge case)', () => {
+      const req = {
+        method: 'GET',
+        headers: ['not', 'an', 'object'],
+      }
+
+      const result = defaultSerializers.request?.(req)
+
+      // Should not include headers when it's an array
+      expect(result?.headers).toBeUndefined()
     })
 
     it('should handle minimal request object', () => {
@@ -191,6 +255,37 @@ describe('Serializers', () => {
         'content-length': '1234',
       })
       expect((result?.headers as Record<string, unknown>)?.['x-custom-header']).toBeUndefined()
+    })
+
+    it('should handle case-insensitive response headers', () => {
+      const res = {
+        statusCode: 201,
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': '5678',
+          'X-Request-Id': 'hidden',
+        },
+      }
+
+      const result = defaultSerializers.response?.(res)
+
+      expect(result?.headers).toMatchObject({
+        'content-type': 'application/json',
+        'content-length': '5678',
+      })
+      expect((result?.headers as Record<string, unknown>)?.['x-request-id']).toBeUndefined()
+    })
+
+    it('should handle headers as array in response', () => {
+      const res = {
+        statusCode: 500,
+        headers: ['array', 'of', 'values'],
+      }
+
+      const result = defaultSerializers.response?.(res)
+
+      expect(result?.statusCode).toBe(500)
+      expect(result?.headers).toBeUndefined()
     })
 
     it('should handle minimal response object', () => {

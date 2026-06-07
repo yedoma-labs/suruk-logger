@@ -124,10 +124,51 @@ describe('Context management', () => {
       })
     })
 
+    it('should filter dangerous keys from additionalFields', () => {
+      runWithContext({}, () => {
+        // Attempt to set multiple dangerous keys
+        bindRequestContext('req-456', {
+          __proto__: 'evil',
+          constructor: 'bad',
+          prototype: 'malicious',
+          normalKey: 'good',
+        } as never)
+
+        const context = getContext()
+        expect(context?.normalKey).toBe('good')
+        // Check that dangerous keys are not in own properties
+        expect(Object.prototype.hasOwnProperty.call(context, '__proto__')).toBe(false)
+        expect(Object.prototype.hasOwnProperty.call(context, 'constructor')).toBe(false)
+        expect(Object.prototype.hasOwnProperty.call(context, 'prototype')).toBe(false)
+      })
+    })
+
     it('should throw when bindRequestContext called outside context', () => {
       expect(() => {
         bindRequestContext('req-123')
       }).toThrow('bindRequestContext must be called inside runWithContext')
+    })
+  })
+
+  describe('Edge cases', () => {
+    it('should return base logger for empty context', () => {
+      runWithContext({}, () => {
+        const logger = getRequestLogger()
+        // Empty context should return base logger
+        expect(logger).toBe(baseLogger)
+      })
+    })
+
+    it('should create child logger when context has values', () => {
+      runWithContext({ requestId: 'req-789', userId: 'user-123' }, () => {
+        const logger = getRequestLogger()
+        // Should create child, not return base logger
+        expect(logger).not.toBe(baseLogger)
+        expect(logger.pino.bindings()).toMatchObject({
+          requestId: 'req-789',
+          userId: 'user-123',
+        })
+      })
     })
   })
 
