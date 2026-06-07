@@ -137,9 +137,9 @@ describe('Context management', () => {
         const context = getContext()
         expect(context?.normalKey).toBe('good')
         // Check that dangerous keys are not in own properties
-        expect(Object.prototype.hasOwnProperty.call(context, '__proto__')).toBe(false)
-        expect(Object.prototype.hasOwnProperty.call(context, 'constructor')).toBe(false)
-        expect(Object.prototype.hasOwnProperty.call(context, 'prototype')).toBe(false)
+        expect(Object.hasOwn(context, '__proto__')).toBe(false)
+        expect(Object.hasOwn(context, 'constructor')).toBe(false)
+        expect(Object.hasOwn(context, 'prototype')).toBe(false)
       })
     })
 
