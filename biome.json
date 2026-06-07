@@ -7,7 +7,12 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["node_modules", "dist", "coverage"]
+    "includes": [
+          "**",
+          "!node_modules",
+          "!dist",
+          "!coverage"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -21,12 +26,11 @@
       "recommended": true,
       "complexity": {
         "noExtraBooleanCast": "error",
-        "noMultipleSpacesInRegularExpressionLiterals": "error",
+        "noAdjacentSpacesInRegex": "error",
         "noUselessCatch": "error",
         "noUselessConstructor": "error",
         "noUselessLoneBlockStatements": "error",
-        "noUselessRename": "error",
-        "noWith": "error"
+        "noUselessRename": "error"
       },
       "correctness": {
         "noConstAssign": "error",
@@ -78,7 +82,7 @@
         "noShadowRestrictedNames": "error",
         "noUnsafeNegation": "error",
         "useGetterReturn": "error",
-        "useValidTypeof": "error"
+        "noWith": "error"
       }
     }
   },
