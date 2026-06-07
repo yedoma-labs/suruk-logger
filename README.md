@@ -127,6 +127,13 @@ logger.info({ userId: 'user-123' }, 'User logged in')
 // Error logging
 logger.error(new Error('Failed'), 'Database connection error')
 
+// Error logging with additional context fields
+logger.error(new Error('Query failed'), 'Database error', {
+  query: 'SELECT * FROM users',
+  duration: 1234,
+  retries: 3
+})
+
 // Available levels
 logger.debug('Debug message')
 logger.info('Info message')
@@ -134,6 +141,136 @@ logger.warn('Warning message')
 logger.error('Error message')
 logger.fatal('Fatal message')
 ```
+
+### Field Redaction
+
+Automatically redact sensitive fields from logs using exact paths or wildcard patterns.
+
+#### Redaction Strategies
+
+**1. Top-level fields:**
+```typescript
+const logger = createLogger({
+  name: 'app',
+  redact: ['password', 'token', 'apiKey']
+})
+
+logger.info('User login', {
+  email: 'user@example.com',
+  password: 'secret123'  // ✅ Redacted
+})
+// Output: { "email": "user@example.com", "password": "[Redacted]" }
+```
+
+**2. Exact nested paths:**
+```typescript
+const logger = createLogger({
+  name: 'app',
+  redact: [
+    'user.password',           // Exact path
+    'headers.authorization',   // Exact path
+    'payment.creditCard'       // Exact path
+  ]
+})
+
+logger.info('User data', {
+  user: {
+    name: 'John',
+    password: 'secret'  // ✅ Redacted (exact path 'user.password')
+  },
+  headers: {
+    authorization: 'Bearer token'  // ✅ Redacted (exact path 'headers.authorization')
+  }
+})
+```
+
+**3. Wildcard patterns (recommended for nested objects):**
+```typescript
+const logger = createLogger({
+  name: 'app',
+  redact: [
+    'password',        // Top-level: { password: '...' }
+    '*.password',      // 1-level: { obj: { password: '...' } }
+    '*.*.password',    // 2-level: { obj: { sub: { password: '...' } } }
+    '*.apiKey',        // Any object with apiKey
+    '*.creditCard',    // Any object with creditCard
+  ]
+})
+
+logger.info('Nested sensitive data', {
+  user: {
+    name: 'John',
+    password: 'secret'  // ✅ Redacted (wildcard '*.password')
+  },
+  config: {
+    apiKey: 'sk_live_abc'  // ✅ Redacted (wildcard '*.apiKey')
+  },
+  payment: {
+    cardData: {
+      creditCard: '4111...'  // ✅ Redacted (wildcard '*.*.creditCard')
+    }
+  }
+})
+```
+
+#### Common Redaction Patterns
+
+**Production-ready configuration:**
+```typescript
+const logger = createLogger({
+  name: 'app',
+  redact: [
+    // Authentication & Authorization
+    'password',
+    '*.password',
+    '*.*.password',
+    'token',
+    '*.token',
+    'apiKey',
+    '*.apiKey',
+    '*.*.apiKey',
+    'secret',
+    '*.secret',
+    
+    // Payment Information
+    'creditCard',
+    'cardNumber',
+    '*.creditCard',
+    '*.cardNumber',
+    '*.*.creditCard',
+    '*.*.cardNumber',
+    'cvv',
+    '*.cvv',
+    'cvv2',
+    '*.cvv2',
+    
+    // Personal Information
+    'ssn',
+    '*.ssn',
+    'taxId',
+    '*.taxId',
+    
+    // HTTP Headers
+    'headers.authorization',
+    'headers.cookie',
+    'req.headers.authorization',
+    'req.headers.cookie',
+  ]
+})
+```
+
+#### When to Use Each Strategy
+
+| Strategy | Use Case | Example |
+|----------|----------|----------|
+| **Top-level** | Field always at root | `'password'` → `{ password: 'x' }` |
+| **Exact path** | Known structure | `'user.password'` → `{ user: { password: 'x' } }` |
+| **Wildcard 1-level** | Any object with field | `'*.password'` → `{ obj: { password: 'x' } }` |
+| **Wildcard 2-level** | Deep nesting | `'*.*.password'` → `{ a: { b: { password: 'x' } } }` |
+
+**⚠️ Performance Note:** Wildcard patterns are slightly slower than exact paths. For high-throughput applications with known structure, prefer exact paths.
+
+**✅ Security Best Practice:** Always use wildcards for sensitive fields to catch them at any nesting level.
 
 ### Context Management
 

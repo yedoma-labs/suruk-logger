@@ -48,20 +48,30 @@ class SurukLogger implements Logger {
     this._log('warn', msgOrFields, fieldsOrMsg)
   }
 
-  error(msgOrFieldsOrErr: string | LogContext | Error, fieldsOrMsg?: LogContext | string): void {
+  error(
+    msgOrFieldsOrErr: string | LogContext | Error,
+    fieldsOrMsg?: LogContext | string,
+    additionalFields?: LogContext
+  ): void {
     if (isError(msgOrFieldsOrErr)) {
       const msg = typeof fieldsOrMsg === 'string' ? fieldsOrMsg : msgOrFieldsOrErr.message
-      this._pino.error({ err: msgOrFieldsOrErr }, msg)
+      const fields = additionalFields ?? {}
+      this._pino.error({ err: msgOrFieldsOrErr, ...fields }, msg)
       return
     }
 
     this._log('error', msgOrFieldsOrErr, fieldsOrMsg)
   }
 
-  fatal(msgOrFieldsOrErr: string | LogContext | Error, fieldsOrMsg?: LogContext | string): void {
+  fatal(
+    msgOrFieldsOrErr: string | LogContext | Error,
+    fieldsOrMsg?: LogContext | string,
+    additionalFields?: LogContext
+  ): void {
     if (isError(msgOrFieldsOrErr)) {
       const msg = typeof fieldsOrMsg === 'string' ? fieldsOrMsg : msgOrFieldsOrErr.message
-      this._pino.fatal({ err: msgOrFieldsOrErr }, msg)
+      const fields = additionalFields ?? {}
+      this._pino.fatal({ err: msgOrFieldsOrErr, ...fields }, msg)
       return
     }
 
