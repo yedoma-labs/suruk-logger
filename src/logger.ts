@@ -88,10 +88,21 @@ class SurukLogger implements Logger {
     } else if (isObject(msgOrFields)) {
       // log(fields, msg)
       const fields = msgOrFields
-      const msg = typeof fieldsOrMsg === 'string' ? fieldsOrMsg : JSON.stringify(fields)
+      let msg: string
+      if (typeof fieldsOrMsg === 'string') {
+        msg = fieldsOrMsg
+      } else {
+        // Fallback: safely stringify fields (handles circular refs)
+        try {
+          msg = JSON.stringify(fields)
+        } catch {
+          msg = '[Object with circular reference]'
+        }
+      }
       this._pino[level](fields, msg)
     } else {
-      this._pino[level](msgOrFields as string)
+      // Unsupported signature
+      this._pino[level]({}, String(msgOrFields))
     }
   }
 }

@@ -37,4 +37,10 @@ export interface Logger {
   readonly pino: PinoLogger
 }
 
+/**
+ * Note: All serializer functions are required in the default implementation.
+ * When providing custom serializers, they fully replace the default serializers.
+ * Ensure custom serializers handle security concerns (redaction, depth limits, etc.).
+ */
+
 export type { LoggerOptions, PinoLogger }
