@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Enhanced `error()` and `fatal()` methods now accept additional context fields as third parameter
+  - New signature: `logger.error(err: Error, msg: string, fields: LogContext)`
+  - New signature: `logger.fatal(err: Error, msg: string, fields: LogContext)`
+  - Allows logging errors with rich contextual data in a single call
+- Comprehensive field redaction documentation in README
+  - Top-level field redaction examples
+  - Exact nested path redaction patterns
+  - Wildcard patterns for any nesting level (`*.password`, `*.*.password`)
+  - Production-ready redaction configuration examples
+  - Security best practices and performance considerations
+- New example file: `examples/error-with-context.ts`
+  - Demonstrates error logging with additional context fields
+  - Shows real-world use cases (database errors, API failures, file system errors)
+- Enhanced `examples/redaction.ts` with wildcard pattern demonstrations
+  - Shows top-level, exact path, and wildcard redaction strategies
+  - Includes before/after examples and explanations
+
+### Changed
+- README now includes comprehensive "Field Redaction" section
+  - Documents all redaction strategies with examples
+  - Includes comparison table for when to use each strategy
+  - Added production-ready redaction configuration template
+- Error logging examples in README updated to show new context fields feature
+
+### Fixed
+- Type definitions now properly support error logging with context fields
+
 ## [0.1.0] - 2026-06-07
 
 ### Added
