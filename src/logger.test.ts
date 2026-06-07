@@ -95,6 +95,24 @@ describe('SurukLogger', () => {
 
       expect(logger.pino.fatal).toHaveBeenCalledWith({ err: error }, 'Critical failure')
     })
+
+    it('should log fatal errors without custom message', () => {
+      vi.spyOn(logger.pino, 'fatal')
+      const error = new Error('fatal error message')
+      logger.fatal(error)
+
+      expect(logger.pino.fatal).toHaveBeenCalledWith({ err: error }, 'fatal error message')
+    })
+
+    it('should handle fatal error with fields parameter (non-string)', () => {
+      vi.spyOn(logger.pino, 'fatal')
+      const error = new Error('fatal')
+      
+      // Pass error with fields object (should use error message)
+      logger.fatal(error, { context: 'test' } as never)
+
+      expect(logger.pino.fatal).toHaveBeenCalledWith({ err: error }, 'fatal')
+    })
   })
 
   describe('Child logger', () => {
@@ -130,6 +148,48 @@ describe('SurukLogger', () => {
       }).not.toThrow()
 
       expect(logger.pino.info).toHaveBeenCalled()
+    })
+
+    it('should use fallback message for circular references in fields-only call', () => {
+      vi.spyOn(logger.pino, 'warn')
+
+      const circular: Record<string, unknown> = { data: 'value' }
+      circular.ref = circular
+
+      // Call with fields and non-string second param - should trigger JSON.stringify fallback
+      logger.warn(circular, {} as never)
+
+      expect(logger.pino.warn).toHaveBeenCalledWith(
+        circular,
+        '[Object with circular reference]'
+      )
+    })
+  })
+
+  describe('Edge cases', () => {
+    it('should handle non-string, non-object values', () => {
+      vi.spyOn(logger.pino, 'warn')
+
+      // Test with number (falls through to String() conversion)
+      logger.warn(123 as never)
+
+      expect(logger.pino.warn).toHaveBeenCalledWith({}, '123')
+    })
+
+    it('should handle null values', () => {
+      vi.spyOn(logger.pino, 'info')
+
+      logger.info(null as never)
+
+      expect(logger.pino.info).toHaveBeenCalledWith({}, 'null')
+    })
+
+    it('should handle undefined values', () => {
+      vi.spyOn(logger.pino, 'debug')
+
+      logger.debug(undefined as never)
+
+      expect(logger.pino.debug).toHaveBeenCalledWith({}, 'undefined')
     })
   })
 

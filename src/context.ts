@@ -47,10 +47,6 @@ export function bindRequestContext(requestId: string, additionalFields?: LogCont
     throw new Error('bindRequestContext must be called inside runWithContext')
   }
 
-  if (isDangerousKey('requestId')) {
-    throw new Error('Invalid requestId field name')
-  }
-
   store.requestId = requestId
 
   if (additionalFields) {
