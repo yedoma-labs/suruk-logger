@@ -1,5 +1,6 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.4.16/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -45,7 +46,8 @@
         "noUnusedLabels": "error",
         "noUnusedVariables": "error",
         "useIsNan": "error",
-        "useValidForDirection": "error"
+        "useValidForDirection": "error",
+        "useValidTypeof": "error"
       },
       "style": {
         "noNegationElse": "off",
