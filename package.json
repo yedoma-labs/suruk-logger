@@ -1,6 +1,6 @@
 {
   "name": "@yedoma-labs/suruk-logger",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Winston-compatible Pino wrapper with request context binding",
   "type": "module",
   "main": "./dist/index.cjs",

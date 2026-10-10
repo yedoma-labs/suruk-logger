@@ -1,3 +1,22 @@
+# [0.3.0](https://github.com/yedoma-labs/suruk-logger/compare/v0.2.0...v0.3.0) (2026-10-10)
+
+
+### Bug Fixes
+
+* adds null checks ([905c95c](https://github.com/yedoma-labs/suruk-logger/commit/905c95c9c01c2a96dadf1cea5532a46b6e60070e))
+* **deps:** update vitest and coverage packages to matching versions ([cb346a0](https://github.com/yedoma-labs/suruk-logger/commit/cb346a050714fba9c7f760a3423a489d29f851c4))
+* fixes linting ([74188c0](https://github.com/yedoma-labs/suruk-logger/commit/74188c0b2c90beb67308e95844cda87b473f74d1))
+* migrates to new biome keys ([19b4109](https://github.com/yedoma-labs/suruk-logger/commit/19b410929525f102cb241aae8727837f95a82714))
+* typescript 6.0.3 compatibility - add ignoreDeprecations and types config ([4e1f358](https://github.com/yedoma-labs/suruk-logger/commit/4e1f358e7a04b30fc81e9b4f0c05e989feacdf92))
+* typescript 6.0.3 compatibility - add ignoreDeprecations and types config ([3e118c1](https://github.com/yedoma-labs/suruk-logger/commit/3e118c1241de97afae58af5f21104f8d57cd758f))
+
+
+### Features
+
+* enhanced error logging with context fields and comprehensive redaction docs ([8e54801](https://github.com/yedoma-labs/suruk-logger/commit/8e548015be379cd2103e1d4d1d0abeed6b65f1de))
+* migrates biome config ([c7db1af](https://github.com/yedoma-labs/suruk-logger/commit/c7db1af4aa28956064bbed7198b2220620eb136b))
+* updates redaction test ([4b5658b](https://github.com/yedoma-labs/suruk-logger/commit/4b5658b995856b75899c19450942405b24e82c51))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
