@@ -1,3 +1,10 @@
+## [0.3.1](https://github.com/yedoma-labs/suruk-logger/compare/v0.3.0...v0.3.1) (2026-10-10)
+
+
+### Bug Fixes
+
+* **deps:** override vulnerable transitive dependencies ([#12](https://github.com/yedoma-labs/suruk-logger/issues/12)) ([d27fbc3](https://github.com/yedoma-labs/suruk-logger/commit/d27fbc3a6bd65b1da1e26014ab4ba9e9268462de))
+
 # [0.3.0](https://github.com/yedoma-labs/suruk-logger/compare/v0.2.0...v0.3.0) (2026-10-10)
 
 
