@@ -1,3 +1,6 @@
 allowBuilds:
   esbuild: true
   simple-git-hooks: true
+overrides:
+  'postcss': '>=8.5.23'
+  'source-map-js': '>=1.2.2'
