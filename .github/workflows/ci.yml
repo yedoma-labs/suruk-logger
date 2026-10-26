@@ -30,9 +30,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [24]
     steps:
       - uses: actions/checkout@v7
       
@@ -40,7 +37,7 @@ jobs:
       
       - uses: actions/setup-node@v7
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24
           cache: pnpm
       
       - name: Install dependencies
@@ -50,7 +47,6 @@ jobs:
         run: pnpm test
       
       - name: Coverage
-        if: matrix.node-version == 24
         run: pnpm test:coverage
 
   build:
