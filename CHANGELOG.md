@@ -1,3 +1,10 @@
+## [0.3.2](https://github.com/yedoma-labs/suruk-logger/compare/v0.3.1...v0.3.2) (2026-10-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependencies to latest ([#19](https://github.com/yedoma-labs/suruk-logger/issues/19)) ([0577021](https://github.com/yedoma-labs/suruk-logger/commit/0577021800310fa41a45cf57da9e470d240e2945))
+
 ## [0.3.1](https://github.com/yedoma-labs/suruk-logger/compare/v0.3.0...v0.3.1) (2026-10-10)
 
 
