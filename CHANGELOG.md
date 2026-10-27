@@ -1,3 +1,10 @@
+## [0.3.3](https://github.com/yedoma-labs/suruk-logger/compare/v0.3.2...v0.3.3) (2026-10-27)
+
+
+### Bug Fixes
+
+* **logger:** keep redacted values out of log messages ([b777c56](https://github.com/yedoma-labs/suruk-logger/commit/b777c561133ebc26bf374d3551c86c328af799c2))
+
 ## [0.3.2](https://github.com/yedoma-labs/suruk-logger/compare/v0.3.1...v0.3.2) (2026-10-26)
 
 
