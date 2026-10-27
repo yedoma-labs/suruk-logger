@@ -337,4 +337,57 @@ describe('SurukLogger', () => {
       })
     })
   })
+
+  describe('Redaction of fields-only calls', () => {
+    it('should not copy redacted values into the message', () => {
+      const redacting = createLogger({ name: 'test', redact: ['password'], pretty: false })
+      const spy = vi.spyOn(redacting.pino, 'info')
+
+      redacting.info({ password: 'hunter2', user: 'john' } as never)
+
+      expect(spy).toHaveBeenCalledTimes(1)
+      const [fields, msg] = spy.mock.calls[0] ?? []
+      expect(fields).toEqual({ password: 'hunter2', user: 'john' })
+      expect(msg).toBeUndefined()
+    })
+
+    it('should not copy nested redacted values into the message', () => {
+      const redacting = createLogger({ name: 'test', redact: ['*.apiKey'], pretty: false })
+      const spy = vi.spyOn(redacting.pino, 'warn')
+
+      redacting.warn({ config: { apiKey: 'sk_live_abc' } } as never)
+
+      const [, msg] = spy.mock.calls[0] ?? []
+      expect(msg).toBeUndefined()
+    })
+
+    it('should keep the message when one is given', () => {
+      const redacting = createLogger({ name: 'test', redact: ['password'], pretty: false })
+      const spy = vi.spyOn(redacting.pino, 'info')
+
+      redacting.info({ password: 'hunter2' }, 'Login attempt')
+
+      expect(spy).toHaveBeenCalledWith({ password: 'hunter2' }, 'Login attempt')
+    })
+  })
+
+  describe('isLevelEnabled', () => {
+    it('should report whether a level would be emitted', () => {
+      const warnLogger = createLogger({ name: 'test', level: 'warn', pretty: false })
+
+      expect(warnLogger.isLevelEnabled('debug')).toBe(false)
+      expect(warnLogger.isLevelEnabled('info')).toBe(false)
+      expect(warnLogger.isLevelEnabled('warn')).toBe(true)
+      expect(warnLogger.isLevelEnabled('error')).toBe(true)
+      expect(warnLogger.isLevelEnabled('fatal')).toBe(true)
+    })
+
+    it('should be available on child loggers', () => {
+      const parent = createLogger({ name: 'test', level: 'error', pretty: false })
+      const child = parent.child({ service: 'api' })
+
+      expect(child.isLevelEnabled('warn')).toBe(false)
+      expect(child.isLevelEnabled('error')).toBe(true)
+    })
+  })
 })

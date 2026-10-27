@@ -147,9 +147,27 @@ logger.error('Error message')
 logger.fatal('Fatal message')
 ```
 
+#### `isLevelEnabled(level: LogLevel): boolean`
+
+Check whether a level would be emitted before building an expensive payload:
+
+```typescript
+const logger = createLogger({ name: 'app', level: 'warn' })
+
+logger.isLevelEnabled('debug') // false
+logger.isLevelEnabled('error') // true
+
+if (logger.isLevelEnabled('debug')) {
+  logger.debug('Cache dump', { entries: buildExpensiveDump() })
+}
+```
+
 ### Field Redaction
 
 Automatically redact sensitive fields from logs using exact paths or wildcard patterns.
+
+Redaction applies to the fields. The message is never built from the fields, so a value
+passed to `redact` cannot reappear in the `msg` of a log line.
 
 #### Redaction Strategies
 

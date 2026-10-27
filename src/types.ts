@@ -35,6 +35,7 @@ export interface Logger {
   fatal(err: Error, msg?: string): void
   fatal(err: Error, msg: string, fields: LogContext): void
   child(fields: LogContext): Logger
+  isLevelEnabled(level: LogLevel): boolean
   readonly level: LogLevel
   readonly pino: PinoLogger
 }

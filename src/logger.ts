@@ -11,6 +11,15 @@ function isError(value: unknown): value is Error {
   return value instanceof Error
 }
 
+function isSerializable(value: unknown): boolean {
+  try {
+    JSON.stringify(value)
+    return true
+  } catch {
+    return false
+  }
+}
+
 /**
  * Sanitize fields to prevent prototype pollution
  * Removes dangerous keys: __proto__, constructor, prototype
@@ -54,6 +63,13 @@ class SurukLogger implements Logger {
 
   get pino(): PinoLogger {
     return this._pino
+  }
+
+  /**
+   * Whether a message at `level` would be emitted. Use it to skip building expensive payloads.
+   */
+  isLevelEnabled(level: LogLevel): boolean {
+    return this._pino.isLevelEnabled(level)
   }
 
   debug(msgOrFields: string | LogContext, fieldsOrMsg?: LogContext | string): void {
@@ -152,18 +168,18 @@ class SurukLogger implements Logger {
     } else if (isObject(msgOrFields)) {
       // log(fields, msg)
       const fields = msgOrFields
-      let msg: string
       if (typeof fieldsOrMsg === 'string') {
-        msg = fieldsOrMsg
-      } else {
-        // Fallback: safely stringify fields (handles circular refs)
-        try {
-          msg = JSON.stringify(fields)
-        } catch {
-          msg = '[Object with circular reference]'
-        }
+        this._pino[level](fields, fieldsOrMsg)
+        return
       }
-      this._pino[level](fields, msg)
+      // No message given: log the fields alone. The message is never derived from the fields,
+      // because JSON.stringify would copy values past pino's redact paths into the output.
+      if (isSerializable(fields)) {
+        this._pino[level](fields)
+      } else {
+        // Circular references cannot be serialized
+        this._pino[level](fields, '[Object with circular reference]')
+      }
     } else {
       // Unsupported signature
       this._pino[level]({}, String(msgOrFields))
