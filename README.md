@@ -7,8 +7,6 @@
 
 **Winston-compatible Pino wrapper with request context binding**
 
-*suruk* (сурук; Yakutian/Sakha) = "trace/mark"
-
 [![CI](https://github.com/yedoma-labs/suruk-logger/actions/workflows/ci.yml/badge.svg)](https://github.com/yedoma-labs/suruk-logger/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/@yedoma-labs/suruk-logger)](https://www.npmjs.com/package/@yedoma-labs/suruk-logger)
 [![npm downloads](https://img.shields.io/npm/dm/@yedoma-labs/suruk-logger)](https://www.npmjs.com/package/@yedoma-labs/suruk-logger)
